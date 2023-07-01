@@ -18,6 +18,7 @@ import {
 
 import {
   AddProductToCartDto,
+  CreateCartDto,
   GetCartResponseDto,
   RemoveProductFromCartDto,
 } from '@modules/cart/dtos';
@@ -34,7 +35,7 @@ export class CartController {
   constructor(private readonly cartService: CartService) {}
 
   @Post()
-  @ApiCreatedResponse({ status: HttpStatus.CREATED })
+  @ApiCreatedResponse({ status: HttpStatus.CREATED, type: CreateCartDto })
   addProductToCart(
     @Headers() headers: HeaderDto,
     @Body() cartDto: AddProductToCartDto,

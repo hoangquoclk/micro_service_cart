@@ -7,6 +7,7 @@ import {
 } from '@modules/cart/repositories';
 import {
   AddProductToCartDto,
+  CreateCartDto,
   GetCartResponseDto,
   RemoveProductFromCartDto,
 } from '@modules/cart/dtos';
@@ -34,7 +35,7 @@ export class CartService {
   async addProductToCart(
     user: IAuthUser,
     { productId, cartId, quantity }: AddProductToCartDto,
-  ): Promise<CartEntity> {
+  ): Promise<CreateCartDto> {
     const cartUser = await this.userService.findOrCreate(user);
 
     const foundProduct = await this.productRepository.findOne({
@@ -88,7 +89,7 @@ export class CartService {
       });
     }
 
-    return cart;
+    return CreateCartDto.factory(cart);
   }
 
   async removeProductFromCart(

@@ -6,9 +6,16 @@ import { CartEntity, CartProductEntity } from '@modules/cart/entities';
 class GetCartProductResponseDto {
   @IsNotEmpty()
   @ApiProperty({
+    example: 1,
+  })
+  productId: number;
+
+  @IsNotEmpty()
+  @ApiProperty({
     example: 'product name',
   })
   name: string;
+
   @IsNotEmpty()
   @ApiProperty({
     example: 10.0,
@@ -66,6 +73,7 @@ export class GetCartResponseDto {
         amount += totalPrice;
 
         return {
+          productId: cartProduct.productId,
           name: cartProduct.product.name,
           price: cartProduct.product.price,
           quantity: cartProduct.quantity,
