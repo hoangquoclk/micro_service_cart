@@ -1,27 +1,57 @@
-import { All, Controller, Req, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpStatus,
+  Param,
+  Post,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
+import {
+  ApiCreatedResponse,
+  ApiOkResponse,
+  ApiSecurity,
+  ApiTags,
+} from '@nestjs/swagger';
 import { Request } from 'express';
 
 import { RedirectService } from '@modules/redirects/services/redirect.service';
+import { CreateProductDto, ProductDto } from '@modules/product/dtos';
 import { JwtAuthGuard } from '@shared/guards/jwt-auth.guard';
-import { UrlUtils } from '@shared/utils/url-utils';
+import { IdParamStringDto } from '@shared/dtos/id-param.dto';
 
-@Controller(process.env.API_PRODUCT_PREFIX)
+@Controller('products')
+@ApiTags('products')
+@ApiSecurity('bearerAuth')
 @UseGuards(JwtAuthGuard)
 export class ProductController {
   constructor(private readonly redirectService: RedirectService) {}
 
-  @All('*')
-  async allRoutes(@Req() request: Request) {
-    return this.redirect(request);
+  @Post()
+  @ApiCreatedResponse({ status: HttpStatus.CREATED, type: ProductDto })
+  create(@Req() request: Request, @Body() productDto: CreateProductDto) {
+    return this.redirectService.redirect(
+      request,
+      `${process.env.API_PRODUCT_URL}/products`,
+    );
   }
 
-  private async redirect(@Req() request: Request) {
-    const url = UrlUtils.getUrl(
+  @Get()
+  @ApiOkResponse({ status: HttpStatus.OK, type: [ProductDto] })
+  getAll(@Req() request: Request) {
+    return this.redirectService.redirect(
       request,
-      process.env.CARS_URL,
-      process.env.RENTAL_API_PREFIX,
+      `${process.env.API_PRODUCT_URL}/products`,
     );
+  }
 
-    return this.redirectService.redirect(request, url);
+  @Get('/:id')
+  @ApiOkResponse({ status: HttpStatus.OK, type: ProductDto })
+  getById(@Req() request: Request, @Param() { id }: IdParamStringDto) {
+    return this.redirectService.redirect(
+      request,
+      `${process.env.API_PRODUCT_URL}/products/${id}`,
+    );
   }
 }

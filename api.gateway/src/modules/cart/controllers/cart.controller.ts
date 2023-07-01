@@ -1,27 +1,67 @@
-import { All, Controller, Req, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpStatus,
+  Param,
+  Post,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
+import {
+  ApiCreatedResponse,
+  ApiOkResponse,
+  ApiSecurity,
+  ApiTags,
+} from '@nestjs/swagger';
 import { Request } from 'express';
 
+import {
+  AddProductToCartDto,
+  CreateCartDto,
+  GetCartResponseDto,
+  RemoveProductFromCartDto,
+} from '@modules/cart/dtos';
 import { RedirectService } from '@modules/redirects/services/redirect.service';
 import { JwtAuthGuard } from '@shared/guards/jwt-auth.guard';
-import { UrlUtils } from '@shared/utils/url-utils';
+import { IdParamNumberDto } from '@shared/dtos/id-param.dto';
 
-@Controller(process.env.API_CART_PREFIX)
+@Controller('carts')
+@ApiTags('carts')
+@ApiSecurity('bearerAuth')
 @UseGuards(JwtAuthGuard)
 export class CartController {
   constructor(private readonly redirectService: RedirectService) {}
 
-  @All('*')
-  async allRoutes(@Req() request: Request) {
-    return this.redirect(request);
+  @Post()
+  @ApiCreatedResponse({ status: HttpStatus.CREATED, type: CreateCartDto })
+  addProductToCart(@Req() request: Request, @Body() body: AddProductToCartDto) {
+    return this.redirectService.redirect(
+      request,
+      `${process.env.API_CART_URL}/carts`,
+    );
   }
 
-  private async redirect(@Req() request: Request) {
-    const url = UrlUtils.getUrl(
+  @Delete('/:id')
+  @ApiOkResponse({ status: HttpStatus.OK })
+  remoteProductFromCart(
+    @Req() request: Request,
+    @Param() { id }: IdParamNumberDto,
+    @Body() removeDto: RemoveProductFromCartDto,
+  ) {
+    return this.redirectService.redirect(
       request,
-      process.env.CARS_URL,
-      process.env.RENTAL_API_PREFIX,
+      `${process.env.API_CART_URL}/carts/${id}`,
     );
+  }
 
-    return this.redirectService.redirect(request, url);
+  @Get('/:id')
+  @ApiOkResponse({ status: HttpStatus.OK, type: GetCartResponseDto })
+  getCartById(@Req() request: Request, @Param() { id }: IdParamNumberDto) {
+    return this.redirectService.redirect(
+      request,
+      `${process.env.API_CART_URL}/carts/${id}`,
+    );
   }
 }
