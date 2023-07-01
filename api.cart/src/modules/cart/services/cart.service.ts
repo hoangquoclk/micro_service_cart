@@ -34,7 +34,7 @@ export class CartService {
   async addProductToCart(
     user: IAuthUser,
     { productId, cartId, quantity }: AddProductToCartDto,
-  ) {
+  ): Promise<CartEntity> {
     const cartUser = await this.userService.findOrCreate(user);
 
     const foundProduct = await this.productRepository.findOne({
@@ -47,16 +47,25 @@ export class CartService {
 
     let cart: CartEntity = null;
 
-    if (!cartId) {
-      cart = await this.cartRepository.save({
-        userId: cartUser.id,
+    if (cartId) {
+      cart = await this.cartRepository.findOne({
+        where: { id: cartId, isOpened: true },
       });
     } else {
-      cart = await this.cartRepository.findOne({ where: { id: cartId } });
+      cart = await this.cartRepository.findOne({
+        where: { userId: cartUser.id, isOpened: true },
+      });
+
+      if (!cart) {
+        cart = await this.cartRepository.save({
+          userId: cartUser.id,
+          isOpened: true,
+        });
+      }
     }
 
     if (!cart) {
-      throw new AppError(HttpStatus.NOT_FOUND, 'Cart not found');
+      throw new AppError(HttpStatus.NOT_FOUND, 'Cart not found or its closed');
     }
 
     const foundCartProduct = await this.cartProductRepository.findOne({
@@ -78,6 +87,8 @@ export class CartService {
         quantity,
       });
     }
+
+    return cart;
   }
 
   async removeProductFromCart(
@@ -88,7 +99,7 @@ export class CartService {
     const cartUser = await this.userService.findOrCreate(user);
 
     const foundCart = await this.cartRepository.findOne({
-      where: { id: cartId, userId: cartUser.id },
+      where: { id: cartId, userId: cartUser.id, isOpened: true },
     });
 
     if (!foundCart) {

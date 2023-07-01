@@ -19,6 +19,9 @@ export class CartEntity extends BaseEntity {
   @Column({ name: 'user_id' })
   userId: number;
 
+  @Column({ name: 'is_opened' })
+  isOpened: boolean;
+
   @OneToMany(() => CartProductEntity, (cartProduct) => cartProduct.cart)
   cartProducts: CartProductEntity[];
 

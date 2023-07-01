@@ -23,6 +23,11 @@ export class CartEntity1688183381585 implements MigrationInterface {
             name: 'user_id',
             type: 'int',
           },
+          {
+            name: 'is_opened',
+            type: 'boolean',
+            default: true,
+          },
         ],
       }),
     );
