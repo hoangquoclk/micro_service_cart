@@ -1,3 +1,4 @@
+import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import * as dotenv from 'dotenv';
@@ -30,7 +31,27 @@ async function bootstrap() {
 
   await swaggerConfig(app, []);
 
+  app.connectMicroservice<MicroserviceOptions>({
+    transport: Transport.KAFKA,
+    options: {
+      client: {
+        clientId: process.env.KAFKA_CLIENT_ID,
+        brokers: [process.env.KAFKA_BROKERS],
+      },
+      consumer: {
+        groupId:
+          process.env.NODE_ENV === 'DEVELOPMENT'
+            ? process.env.KAFKA_GROUP_ID + new Date().getMilliseconds()
+            : process.env.KAFKA_GROUP_ID,
+      },
+    },
+  });
+
   const port = process.env.PORT || 3001;
+
+  await app.startAllMicroservices().then(() => {
+    console.log('[Cart] Microservice running!');
+  });
 
   await app
     .listen(port)
