@@ -4,6 +4,7 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
+
 import { AuthenticationService } from '@modules/authentication/services/authentication.service';
 
 @Injectable()

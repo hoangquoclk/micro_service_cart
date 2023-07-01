@@ -47,7 +47,7 @@ async function bootstrap() {
     },
   });
 
-  const port = process.env.PORT || 3001;
+  const port = process.env.PORT || 3002;
 
   await app.startAllMicroservices().then(() => {
     console.log('[Cart] Microservice running!');
