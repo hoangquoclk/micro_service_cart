@@ -10,6 +10,9 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Test {
-  id Int @id @map("_id")
+model Product {
+  id          String @id @map("_id")
+  name        String @unique
+  price       Float
+  description String
 }
