@@ -23,7 +23,7 @@ import { IdParamDto } from '@shared/dtos/id-param.dto';
 @ApiSecurity('bearerAuth')
 @UseGuards(JwtAuthGuard)
 @Controller('products')
-@ApiTags('car')
+@ApiTags('products')
 export class ProductController {
   constructor(private readonly productService: ProductService) {}
 
