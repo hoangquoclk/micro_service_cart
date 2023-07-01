@@ -6,23 +6,35 @@ import {
   Headers,
   Body,
   Param,
+  UseGuards,
+  HttpStatus,
 } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import {
+  ApiCreatedResponse,
+  ApiOkResponse,
+  ApiSecurity,
+  ApiTags,
+} from '@nestjs/swagger';
 
 import {
   AddProductToCartDto,
+  GetCartResponseDto,
   RemoveProductFromCartDto,
 } from '@modules/cart/dtos';
 import { CartService } from '@modules/cart/services/cart.service';
+import { JwtAuthGuard } from '@shared/guards/jwt-auth.guard';
 import { IdParamDto } from '@shared/dtos/id-param.dto';
 import { HeaderDto } from '@shared/dtos/header.dto';
 
+@ApiSecurity('bearerAuth')
+@UseGuards(JwtAuthGuard)
 @Controller('carts')
 @ApiTags('carts')
 export class CartController {
   constructor(private readonly cartService: CartService) {}
 
   @Post()
+  @ApiCreatedResponse({ status: HttpStatus.CREATED })
   addProductToCart(
     @Headers() headers: HeaderDto,
     @Body() cartDto: AddProductToCartDto,
@@ -31,6 +43,7 @@ export class CartController {
   }
 
   @Delete('/:id')
+  @ApiOkResponse({ status: HttpStatus.OK })
   removeProductFromCart(
     @Param() { id }: IdParamDto,
     @Headers() headers: HeaderDto,
@@ -39,8 +52,9 @@ export class CartController {
     return this.cartService.removeProductFromCart(id, headers.user, removeDto);
   }
 
-  @Get()
-  getCartById() {
-    //
+  @Get('/:id')
+  @ApiOkResponse({ status: HttpStatus.OK, type: GetCartResponseDto })
+  getCartById(@Param() { id }: IdParamDto, @Headers() headers: HeaderDto) {
+    return this.cartService.getCartById(id, headers.user);
   }
 }

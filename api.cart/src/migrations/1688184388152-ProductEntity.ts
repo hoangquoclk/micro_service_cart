@@ -20,6 +20,8 @@ export class ProductEntity1688184388152 implements MigrationInterface {
           {
             name: 'price',
             type: 'float',
+            isNullable: false,
+            default: 0.0,
           },
         ],
       }),

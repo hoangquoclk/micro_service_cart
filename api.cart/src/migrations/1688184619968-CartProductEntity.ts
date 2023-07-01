@@ -38,7 +38,7 @@ export class CartProductEntity1688184619968 implements MigrationInterface {
     await queryRunner.createIndex(
       'cart_product',
       new TableIndex({
-        name: 'cart_product_cart_fk',
+        name: 'cart_product_cart_fk_idx',
         columnNames: ['cart_id'],
       }),
     );
@@ -46,7 +46,7 @@ export class CartProductEntity1688184619968 implements MigrationInterface {
     await queryRunner.createIndex(
       'cart_product',
       new TableIndex({
-        name: 'cart_product_product_fk',
+        name: 'cart_product_product_fk_idx',
         columnNames: ['product_id'],
       }),
     );
@@ -75,8 +75,8 @@ export class CartProductEntity1688184619968 implements MigrationInterface {
   public async down(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.dropForeignKey('cart_product', 'cart_product_product_fk');
     await queryRunner.dropForeignKey('cart_product', 'cart_product_cart_fk');
-    await queryRunner.dropIndex('cart_product', 'cart_product_product_fk');
-    await queryRunner.dropIndex('cart_product', 'cart_product_cart_fk');
+    await queryRunner.dropIndex('cart_product', 'cart_product_product_fk_idx');
+    await queryRunner.dropIndex('cart_product', 'cart_product_cart_fk_idx');
     await queryRunner.dropTable('cart_product');
   }
 }

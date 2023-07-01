@@ -7,6 +7,7 @@ import {
 } from '@modules/cart/repositories';
 import {
   AddProductToCartDto,
+  GetCartResponseDto,
   RemoveProductFromCartDto,
 } from '@modules/cart/dtos';
 import { ProductRepository } from '@modules/product/repositories/product.repository';
@@ -34,9 +35,7 @@ export class CartService {
     user: IAuthUser,
     { productId, cartId, quantity }: AddProductToCartDto,
   ) {
-    const userId = user.sub;
-
-    await this.userService.findOrCreate(user);
+    const cartUser = await this.userService.findOrCreate(user);
 
     const foundProduct = await this.productRepository.findOne({
       where: { id: productId },
@@ -50,7 +49,7 @@ export class CartService {
 
     if (!cartId) {
       cart = await this.cartRepository.save({
-        userId,
+        userId: cartUser.id,
       });
     } else {
       cart = await this.cartRepository.findOne({ where: { id: cartId } });
@@ -60,11 +59,25 @@ export class CartService {
       throw new AppError(HttpStatus.NOT_FOUND, 'Cart not found');
     }
 
-    await this.cartProductRepository.save({
-      cartId: cart.id,
-      productId: foundProduct.id,
-      quantity,
+    const foundCartProduct = await this.cartProductRepository.findOne({
+      where: {
+        cartId: cart.id,
+        productId: foundProduct.id,
+      },
     });
+
+    if (foundCartProduct) {
+      await this.cartProductRepository.update(
+        { cartId: cart.id, productId: foundProduct.id },
+        { ...foundCartProduct, quantity },
+      );
+    } else {
+      await this.cartProductRepository.save({
+        cartId: cart.id,
+        productId: foundProduct.id,
+        quantity,
+      });
+    }
   }
 
   async removeProductFromCart(
@@ -72,10 +85,10 @@ export class CartService {
     user: IAuthUser,
     { productId, quantity }: RemoveProductFromCartDto,
   ) {
-    const userId = user.sub;
+    const cartUser = await this.userService.findOrCreate(user);
 
     const foundCart = await this.cartRepository.findOne({
-      where: { id: cartId, userId },
+      where: { id: cartId, userId: cartUser.id },
     });
 
     if (!foundCart) {
@@ -104,13 +117,41 @@ export class CartService {
       );
     }
 
+    if (quantity > foundCartProduct.quantity) {
+      throw new AppError(HttpStatus.BAD_REQUEST, 'Invalid quantity to remove');
+    }
+
     if (foundCartProduct.quantity === quantity) {
       await this.cartProductRepository.delete({ productId, cartId });
     } else {
       await this.cartProductRepository.update(
         { productId, cartId },
-        { ...foundCartProduct, quantity },
+        { ...foundCartProduct, quantity: foundCartProduct.quantity - quantity },
       );
     }
+  }
+
+  async getCartById(
+    cartId: number,
+    user: IAuthUser,
+  ): Promise<GetCartResponseDto> {
+    const cartUser = await this.userService.findOrCreate(user);
+
+    const foundCart = await this.cartRepository.findOne({
+      where: { id: cartId, userId: cartUser.id },
+    });
+
+    if (!foundCart) {
+      throw new AppError(HttpStatus.NOT_FOUND, 'Cart not found');
+    }
+
+    const cartProducts = await this.cartProductRepository.find({
+      where: {
+        cartId,
+      },
+      relations: ['product'],
+    });
+
+    return GetCartResponseDto.factory(foundCart, cartProducts);
   }
 }

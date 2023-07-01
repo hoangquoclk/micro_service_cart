@@ -2,7 +2,6 @@ import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import * as dotenv from 'dotenv';
 
-import { HeadersInterceptor } from '@shared/interceptors/headers.interceptor';
 import { ErrorInterceptor } from '@shared/interceptors/error.interceptor';
 import { swaggerConfig } from '@configs/swagger/swagger.config';
 import { AppModule } from './app.module';
@@ -26,7 +25,6 @@ async function bootstrap() {
   );
 
   app.useGlobalInterceptors(new ErrorInterceptor());
-  app.useGlobalGuards(new HeadersInterceptor());
 
   app.setGlobalPrefix(process.env.API_PREFIX);
 
