@@ -93,4 +93,4 @@ By now, the functional services are still decomposed into four core services. Ea
 ## IMPROVEMENTS
 - Add 100% test coverage;
 - Add more endpoints to the microservices;
-- Remove duplicate files/features by creating an internal package and installing/sharing that package across projects that are using the same files/features.
+- Remove duplicate files/functions by creating an internal package and installing/sharing that package across projects that are using the same files/functions.
