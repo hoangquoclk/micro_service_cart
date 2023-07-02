@@ -15,7 +15,7 @@
 > - Create a .env file and provide the environment values, by startcopying the .env.example;
 > - Run database migrations to create the database structure by:
 >> ```
->> nmp run typeorm:up
+>> npm run typeorm:up
 >> ```
 > 
 > After provide the environments values and create the database structure, just start the application with:
