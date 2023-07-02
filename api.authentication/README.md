@@ -24,3 +24,5 @@
 >
 > npm run start:dev
 > ```
+> 
+> By default the application will start on ```http://localhost:3003``` and the swagger on ```http://localhost:3003/docs```
