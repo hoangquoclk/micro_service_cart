@@ -7,7 +7,7 @@
 ## Installation
 > Install the dependencies with the following command:
 > ```
-> nmp install
+> npm install
 > ```
 
 ## Run
@@ -20,7 +20,7 @@
 > 
 > After provide the environments values and create the database structure, just start the application with:
 > ```
-> nmp run start
+> npm run start
 >
 > or
 >
