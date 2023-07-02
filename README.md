@@ -82,7 +82,7 @@ By now, the functional services are still decomposed into four core services. Ea
 ### [Api Product](https://github.com/ViniciussMelo/cart-microservice/tree/master/api.product)
 - Provides endpoints to manipulate the products;
 - Send the ```product.created``` event when a new product is created;
-- Has its own mongoDB database to store and control cart data.
+- Has its own mongoDB database to store and control product data.
 
 | Method | Path           | Description           |
 |--------|----------------|-----------------------|
