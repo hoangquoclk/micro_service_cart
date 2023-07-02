@@ -64,18 +64,24 @@
     "typescript": "4.3.5"
   },
   "jest": {
-    "moduleFileExtensions": [
-      "js",
-      "json",
-      "ts"
-    ],
     "rootDir": "src",
+    "moduleNameMapper": {
+      "@modules/(.+)": "<rootDir>/modules/$1",
+      "@shared/(.+)": "<rootDir>/shared/$1",
+      "@configs/(.+)": "<rootDir>/configs/$1"
+    },
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js"
+    ],
     "testRegex": ".*\\.spec\\.ts$",
     "transform": {
       "^.+\\.(t|j)s$": "ts-jest"
     },
     "collectCoverageFrom": [
-      "**/*.(t|j)s"
+      "**/*.controller.(t|j)s",
+      "**/*.service.(t|j)s"
     ],
     "coverageDirectory": "../coverage",
     "testEnvironment": "node"
